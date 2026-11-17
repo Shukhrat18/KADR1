@@ -236,6 +236,8 @@
     ];
 
     // ======================= ҲАМАИ 169 КОРМАНДОН АЗ ФАЙЛИ WORD =======================
+    // Формат: [fullname, position, orderNumber, phone, birthday, education, category]
+    // Барои кормандони техникӣ (саҳифаи 14-16) зодрӯз дар файл нест — холӣ гузошта шуд
     const ALL_EMPLOYEES = [
         // ===== МАЪМУРИЯТ (51 нафар) =====
         ["Ашурзода Ҷамшеди Хуршед","Директори коллеҷ","Ф.№ 132-1/2 аз 07.07.2026","918-64-00-05","16.11.1991","Олӣ, н.и.с","Маъмурият"],
@@ -385,6 +387,7 @@
         ["Рустамова Ҳилола Салимовна","Омӯзгор","Ф. №1541/2 аз 26.08.2026","905-91-12-21","10.10.2006","Миёнаи касбӣ","Кафедраи тибби оилавӣ, фарматсевтӣ ва стоматологӣ"],
 
         // ===== КОРМАНДОНИ ТЕХНИКӢ (36 нафар) =====
+        // ДАР ФАЙЛИ WORD БАРОИ ИН КАТЕГОРИЯ ЗОДРӢЗ НАВИШТА НАШУДААСТ — ХОЛӢ ГУЗОШТА ШУД
         ["Рустамов Салим Раҳматович","Сардори муҳофизон","Ф. №8 ҳш/1 аз 25.09.2023","900-90-93-36","","Миёна","Кормандони техникӣ"],
         ["Маҳмадалиев Маҳмадулло Сафарович","Посбон","Ф. №2 ҳш/67 аз 01.09.2021","904-09-41-51","","","Кормандони техникӣ"],
         ["Боев Суҳроб Рустамович","Посбон","Ф. №9 ҳш/5 аз 13.10.2022","918-42-74-75","","","Кормандони техникӣ"],
@@ -450,16 +453,16 @@
     }
 
     function loadData() {
-        const saved = localStorage.getItem("hr_employees_word_v1");
+        const saved = localStorage.getItem("hr_employees_word_v2");
         if(saved) {
             employees = JSON.parse(saved);
             const maxId = employees.length > 0 ? Math.max(...employees.map(e => e.id)) : 0;
             nextId = maxId + 1;
         } else {
             employees = initEmployees();
-            localStorage.setItem("hr_employees_word_v1", JSON.stringify(employees));
+            localStorage.setItem("hr_employees_word_v2", JSON.stringify(employees));
         }
-        const savedAtt = localStorage.getItem("attendance_records_word_v1");
+        const savedAtt = localStorage.getItem("attendance_records_word_v2");
         if(savedAtt) attendanceRecords = JSON.parse(savedAtt);
         renderAll();
         document.getElementById("totalCount").innerText = `👥 ${employees.length} нафар`;
@@ -467,8 +470,8 @@
         showBirthdayBanner();
     }
 
-    function saveEmployees() { localStorage.setItem("hr_employees_word_v1", JSON.stringify(employees)); }
-    function saveAttendance() { localStorage.setItem("attendance_records_word_v1", JSON.stringify(attendanceRecords)); }
+    function saveEmployees() { localStorage.setItem("hr_employees_word_v2", JSON.stringify(employees)); }
+    function saveAttendance() { localStorage.setItem("attendance_records_word_v2", JSON.stringify(attendanceRecords)); }
     function getPresentIds(date) { return attendanceRecords[date] || []; }
     function setAttendance(date, ids) { attendanceRecords[date] = ids; saveAttendance(); renderAll(); }
 
@@ -549,7 +552,7 @@
 
     function exportAttendanceExcel() {
         const presentIds = getPresentIds(currentDate);
-        const exportData = getEmployeesSortedByCategory().map(e => ({ "№": e.id, "Номи пурра": e.fullname, "Ҳозир (✅)": presentIds.includes(e.id)?"Ҳа":"Не", "Мансаб": e.position, "Фармоиш": e.orderNumber||'', "Телефон": e.phone||'', "Маълумот": e.education||'', "Кафедра": e.category }));
+        const exportData = getEmployeesSortedByCategory().map(e => ({ "№": e.id, "Номи пурра": e.fullname, "Ҳозир (✅)": presentIds.includes(e.id)?"Ҳа":"Не", "Мансаб": e.position, "Фармоиш": e.orderNumber||'', "Телефон": e.phone||'', "Зодрӯз": e.birthday||'', "Маълумот": e.education||'', "Кафедра": e.category }));
         const ws = XLSX.utils.json_to_sheet(exportData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, `Ҳозирӣ_${currentDate}`);
